@@ -39,4 +39,5 @@ elif mode=='pages':
     print(json.dumps({'url':r['html_url'],'status':r['status'],'build_type':r['build_type']}))
 elif mode=='status':
     r=api('GET',repo+'/pages');b=api('GET',repo+'/pages/builds/latest')
-    print(json.dumps({'pages':{k:r.get(k) for k in ['html_url','status','build_type']} if r else None,'build':{k:b.get(k) for k in ['status','error','duration','commit']} if b else None}))
+    runs=api('GET',repo+'/actions/runs?per_page=3') or {}
+    print(json.dumps({'pages':{k:r.get(k) for k in ['html_url','status','build_type']} if r else None,'build':{k:b.get(k) for k in ['status','error','duration','commit']} if b else None,'runs':[{k:a.get(k) for k in ['id','name','status','conclusion','html_url']} for a in runs.get('workflow_runs',[])]}))

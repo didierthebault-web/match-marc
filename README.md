@@ -16,6 +16,8 @@ Deux zones de dépôt, statistiques par corpus, contrôle du parsing, Web Worker
 
 Les décisions initiales restent distinctes des décisions humaines. Les validations sont sauvegardées dans IndexedDB : empreintes SHA-256 des deux fichiers + mapping, puis index stable de notice, identifiants et positions PMB/Koha. Le même fichier rechargé permet de retrouver ses validations, y compris en cas d’identifiant répété. Les identifiants répétés sont signalés. Les validations ne sont pas transférées à des fichiers modifiés : cette prudence évite de réappliquer une décision au mauvais enregistrement.
 
+Une validation humaine de doublon reste prioritaire après un changement de seuils, même si le moteur ne retrouve plus ce candidat automatiquement. Le rapport conserve le statut et les raisons au moment de la décision. Le bouton **Notices distinctes** écarte tous les candidats de la notice PMB, après examen de chacun.
+
 Analyse des exemplaires des doublons validés : `A_CREER`, `DEJA_PRESENT`, `CONFLIT`. Un code-barres absent, répété côté PMB ou Koha, ou présent sur une autre notice cible, empêche une proposition simple de création. Le CSV d’exemplarisation conserve les conflits pour leur examen ; il ne constitue pas un script d’import automatique.
 
 Exports :

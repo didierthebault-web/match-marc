@@ -1,6 +1,6 @@
 import {parseISO2709,getRecordAsMarcText} from '../js/marc-parser.js';
 import {normalizeRecord,defaultMapping} from '../js/normalization.js';
-import {buildIndex,matchRecord,analyzeItems,anomalies,defaults,effectiveStatus} from '../js/matching.js';
+import {buildIndex,matchRecord,analyzeItems,anomalies,defaults,effectiveStatus,applyDecisions} from '../js/matching.js';
 let corpora={},matches=[],idx,config=defaults,mapping=defaultMapping,timings={};
 const send=(type,data={})=>postMessage({type,...data});
 const compact=({raw,fields,...r})=>r;
@@ -27,8 +27,7 @@ onmessage=async({data:d})=>{try{
     timings.Matching=performance.now()-start;progress('Matching PMB → Koha',100);await report();
   }
   if(d.type==='decisions'){
-    // O(1) lookup per source, validated target must belong to its candidates.
-    for(const m of matches){const dec=d.decisions[m.source];if(!dec)continue;if(dec.decision==='duplicate'&&!m.candidates.some(c=>c.target===dec.target))continue;m.decision=dec.decision;m.selectedTarget=dec.decision==='duplicate'?dec.target:m.status==='duplicate'?m.candidates[0]?.target:null;}
+    applyDecisions(matches,corpora.pmb.records,corpora.koha.records,d.decisions);
     await report();
   }
   if(d.type==='detail')send('detail',{source:corpora.pmb.records[d.source],targets:matches[d.source].candidates.map(c=>corpora.koha.records[c.target]),marc:getRecordAsMarcText(corpora.pmb.records[d.source])});

@@ -56,6 +56,18 @@ export function matchRecord(source,targets,idx,config=defaults){
   return {source:source.index,status,initialStatus:status,method:isbnIDs.size?'ISBN':'Titre/Auteur/Date',candidates,reasons,truncated,decision:null,selectedTarget:status==='duplicate'?candidates[0].target:null};
 }
 export function effectiveStatus(match){return match.decision==='duplicate'?'duplicate':match.decision==='distinct'?'unique':match.decision==='later'?'review':match.status;}
+export function applyDecisions(matches,sources,targets,decisions){
+  for(const m of matches){
+    const dec=decisions[m.source];if(!dec||!['duplicate','distinct','later'].includes(dec.decision))continue;
+    if(dec.decision==='duplicate'){
+      const target=targets[dec.target];if(!target||dec.positionKoha!==undefined&&target.position!==dec.positionKoha)continue;
+      // A stricter threshold must never silently turn a human-confirmed duplicate into an import.
+      if(!m.candidates.some(c=>c.target===dec.target))m.candidates.push(comparePair(sources[m.source],target));
+    }
+    m.decision=dec.decision;m.selectedTarget=dec.decision==='duplicate'?dec.target:m.status==='duplicate'?m.candidates[0]?.target:null;
+    m.decisionAudit=dec;
+  }
+}
 export function analyzeItems(matches,sources,targets,idx){
   const sourceBarcodes=new Map();for(const s of sources)for(const it of s.items)if(it.barcode)add(sourceBarcodes,it.barcode,s.index);
   const items=[];

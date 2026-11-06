@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {parseISO2709,parseRecord,values,getRecordAsMarcText} from '../js/marc-parser.js';
 import {normalizeISBN,normalizeTitle,normalizeAuthor,normalizeRecord} from '../js/normalization.js';
-import {buildIndex,matchRecord,defaults,analyzeItems,effectiveStatus} from '../js/matching.js';
+import {buildIndex,matchRecord,defaults,analyzeItems,effectiveStatus,applyDecisions} from '../js/matching.js';
 import {csv,exportRows} from '../js/exports.js';
 import {isbn,makeMARC,concatenate,demo} from '../scripts/fixtures.js';
 const rec=(data,index=0)=>normalizeRecord(parseRecord(makeMARC(data)),index);
@@ -51,3 +51,4 @@ test('CSV : UTF-8 BOM, guillemets, sauts de ligne, protection des formules',()=>
 test('Bloc trop large : aucun classement automatique en notice seule',()=>{const ts=Array.from({length:2001},(_,i)=>rec({id:String(i),title:'Titre commun',isbn:null},i));const m=matchRecord(rec({isbn:null,title:'Titre commun'}),ts,buildIndex(ts));assert.equal(m.status,'review');assert.ok(m.truncated);});
 test('ISBN massivement répété : coût borné et vérification obligatoire',()=>{const ts=Array.from({length:110},(_,i)=>rec({id:String(i)},i));const m=matchRecord(rec({}),ts,buildIndex(ts));assert.equal(m.status,'review');assert.equal(m.candidates.length,100);assert.ok(m.truncated);});
 test('Titre très long : aucun doublon certain sur comparaison tronquée',()=>{assert.equal(match({title:'a'.repeat(610)+'x'},[{title:'a'.repeat(610)+'y'}]).m.status,'review');});
+test('Une validation humaine survit à un durcissement des seuils',()=>{const {s,ts,idx}=match({isbn:null,author:'Martin, Alice'},[{isbn:null,author:'Martin, Alixe'}]);const m=matchRecord(s,ts,idx,{...defaults,noIsbnAuthor:100});assert.equal(m.status,'unique');applyDecisions([m],[s],ts,{0:{decision:'duplicate',target:0,positionKoha:ts[0].position}});assert.equal(effectiveStatus(m),'duplicate');assert.equal(m.initialStatus,'unique');assert.equal(m.candidates.length,1);});
