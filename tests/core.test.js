@@ -49,3 +49,5 @@ test('Démonstration et exports cohérents : 8 certains / 5 à vérifier / 7 seu
 });
 test('CSV : UTF-8 BOM, guillemets, sauts de ligne, protection des formules',()=>{const s=csv([['=HYPERLINK("x")','a;b','été\nligne']]);assert.ok(s.startsWith('\ufeff'));assert.ok(s.includes("\"'=HYPERLINK"));assert.ok(s.includes('"a;b"'));});
 test('Bloc trop large : aucun classement automatique en notice seule',()=>{const ts=Array.from({length:2001},(_,i)=>rec({id:String(i),title:'Titre commun',isbn:null},i));const m=matchRecord(rec({isbn:null,title:'Titre commun'}),ts,buildIndex(ts));assert.equal(m.status,'review');assert.ok(m.truncated);});
+test('ISBN massivement répété : coût borné et vérification obligatoire',()=>{const ts=Array.from({length:110},(_,i)=>rec({id:String(i)},i));const m=matchRecord(rec({}),ts,buildIndex(ts));assert.equal(m.status,'review');assert.equal(m.candidates.length,100);assert.ok(m.truncated);});
+test('Titre très long : aucun doublon certain sur comparaison tronquée',()=>{assert.equal(match({title:'a'.repeat(610)+'x'},[{title:'a'.repeat(610)+'y'}]).m.status,'review');});
