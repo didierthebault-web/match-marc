@@ -1,0 +1,5 @@
+const DB='match-marc-decisions-v1';
+function database(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB,1);req.onupgradeneeded=()=>req.result.createObjectStore('sessions');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
+export async function readSession(key){const db=await database();try{return await new Promise((res,rej)=>{const q=db.transaction('sessions').objectStore('sessions').get(key);q.onsuccess=()=>res(q.result||{});q.onerror=()=>rej(q.error);});}finally{db.close();}}
+export async function saveSession(key,value){const db=await database();try{await new Promise((res,rej)=>{const tx=db.transaction('sessions','readwrite');tx.objectStore('sessions').put(value,key);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});}finally{db.close();}}
+export async function clearSessions(){const db=await database();try{await new Promise((res,rej)=>{const tx=db.transaction('sessions','readwrite');tx.objectStore('sessions').clear();tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});}finally{db.close();}}

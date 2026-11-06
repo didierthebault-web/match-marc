@@ -1,0 +1,8 @@
+node_modules/
+tests/*.png
+tests/browser-results.json
+tests/browser-large-results.json
+tests/performance-corpus.mrc
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-06T16:44:00.475Z",
+  "runtime": "v24.19.0",
+  "scope": "Node, deux corpus synthétiques identiques, mesures indicatives non assimilables à un navigateur",
+  "results": [
+    {
+      "noticesPerCorpus": 1000,
+      "bytesPerCorpus": 165780,
+      "generationMs": 8,
+      "parsingBothMs": 30,
+      "normalizationBothMs": 33,
+      "indexingMs": 2,
+      "matchingMs": 6,
+      "duplicates": 1000,
+      "heapUsedMB": 13,
+      "rssMB": 64
+    },
+    {
+      "noticesPerCorpus": 10000,
+      "bytesPerCorpus": 1677780,
+      "generationMs": 62,
+      "parsingBothMs": 214,
+      "normalizationBothMs": 253,
+      "indexingMs": 20,
+      "matchingMs": 44,
+      "duplicates": 10000,
+      "heapUsedMB": 85,
+      "rssMB": 234
+    },
+    {
+      "noticesPerCorpus": 100000,
+      "bytesPerCorpus": 16977780,
+      "generationMs": 526,
+      "parsingBothMs": 2074,
+      "normalizationBothMs": 2043,
+      "indexingMs": 272,
+      "matchingMs": 489,
+      "duplicates": 100000,
+      "heapUsedMB": 599,
+      "rssMB": 792
+    }
+  ]
+}
